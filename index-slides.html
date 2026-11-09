@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>中華虛擬航空 China Airlines Virtual</title>
+<meta name="description" content="中華虛擬航空於2021年9月3日在台灣成立，是一家非營利的虛擬航空公司，我們會一起在虛擬天空中，與同好們一同享受無壓力的飛行。">
+<meta name="keywords" content="IVAO, VATSIM, MSFS, XP12, Virtual airlines, 虛擬航空">
+<meta property="og:title" content="中華虛擬航空 China Airlines Virtual">
+<meta property="og:description" content="中華虛擬航空於2021年9月3日在台灣成立，是一家非營利的虛擬航空公司。">
+<meta property="og:image" content="/assets/img/ogimage.jpg">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://china-airlines-virtual.github.io/">
+<meta name="theme-color" content="#0e1c36">
+<style>
+  :root {
+    --navy: #0e1c36;
+    --navy-2: #14284b;
+    --accent: #d8434f;      /* 重點色，可自行替換 */
+    --text: #1b1f27;
+    --muted: #6b7280;
+    --line: #e5e7eb;
+    --soft: #f4f6f9;
+  }
+  * { box-sizing: border-box; }
+  html {
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    overflow-y: scroll;
+  }
+  body {
+    margin: 0; color: var(--text); background: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    line-height: 1.7; -webkit-font-smoothing: antialiased;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* 每一頁 */
+  .slide {
+    min-height: 100vh; min-height: 100dvh;
+    scroll-snap-align: start; scroll-snap-stop: always;
+    position: relative; display: flex; align-items: center;
+    padding: 88px 8vw 72px; overflow: hidden;
+  }
+  .slide.dark { background: var(--navy); color: #fff; }
+  .slide.soft { background: var(--soft); }
+  .inner { width: 100%; max-width: 1040px; margin: 0 auto; }
+  .tag { color: var(--accent); font-size: 13px; letter-spacing: .18em; font-weight: 600; margin: 0 0 14px; }
+  h2 { font-size: clamp(30px, 5vw, 52px); line-height: 1.2; margin: 0 0 16px; letter-spacing: -.01em; }
+  .sub { font-size: clamp(16px, 1.8vw, 20px); color: var(--muted); max-width: 640px; margin: 0 0 44px; }
+  .dark .sub { color: rgba(255,255,255,.72); }
+
+  /* 固定頂端列 */
+  .top {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 8vw; color: #fff; mix-blend-mode: normal;
+    background: linear-gradient(rgba(0,0,0,.35), transparent);
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 600; }
+  .brand img { height: 28px; width: auto; }
+  .top .right { display: flex; gap: 12px; align-items: center; font-size: 14px; }
+  .top .right a { opacity: .85; }
+  .top .right a:hover { opacity: 1; }
+  .pill { border: 1px solid rgba(255,255,255,.55); padding: 6px 16px; border-radius: 999px; }
+
+  /* 右側圓點導覽 */
+  .dots {
+    position: fixed; right: 22px; top: 50%; transform: translateY(-50%); z-index: 20;
+    display: flex; flex-direction: column; gap: 14px;
+  }
+  .dots a {
+    width: 9px; height: 9px; border-radius: 50%;
+    background: transparent; border: 1.5px solid var(--accent);
+    transition: transform .2s, background .2s;
+  }
+  .dots a.on { background: var(--accent); transform: scale(1.35); }
+  @media (max-width: 700px) { .dots { right: 10px; gap: 12px; } }
+
+  /* 1 首頁（影片） */
+  .hero { color: #fff; background: #000; }
+  .video { position: absolute; inset: 0; pointer-events: none; }
+  .video iframe {
+    position: absolute; top: 50%; left: 50%;
+    width: 100vw; height: 56.25vw;          /* 16:9 */
+    min-height: 100vh; min-width: 177.78vh; /* 覆蓋整個畫面 */
+    transform: translate(-50%, -50%); border: 0;
+  }
+  .hero::after {
+    content: ""; position: absolute; inset: 0;
+    background: linear-gradient(rgba(8,16,32,.55), rgba(8,16,32,.72));
+  }
+  .hero .inner { position: relative; z-index: 2; }
+  .hero h1 { font-size: clamp(44px, 9vw, 104px); line-height: 1.08; margin: 0 0 18px; letter-spacing: -.02em; }
+  .hero p.lead { font-size: clamp(17px, 2vw, 22px); margin: 0 0 36px; opacity: .9; }
+  .btn {
+    display: inline-block; background: var(--accent); color: #fff;
+    padding: 14px 32px; border-radius: 999px; font-weight: 600;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.line { background: transparent; border: 1px solid currentColor; margin-left: 10px; }
+  .scroll-hint {
+    position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%); z-index: 2;
+    font-size: 12px; letter-spacing: .2em; opacity: .7; animation: bob 2s ease-in-out infinite;
+  }
+  @keyframes bob { 50% { transform: translate(-50%, 6px); } }
+
+  /* 卡片欄位 */
+  .cols { display: grid; gap: 28px; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .col { border-top: 2px solid var(--accent); padding-top: 16px; }
+  .col h3 { margin: 0 0 6px; font-size: 20px; }
+  .col p { margin: 0; color: var(--muted); font-size: 15px; }
+  .dark .col p { color: rgba(255,255,255,.7); }
+  a.col:hover h3 { color: var(--accent); }
+
+  /* 簽派系統 */
+  .split { display: grid; gap: 48px; grid-template-columns: 1.1fr 1fr; align-items: center; }
+  .split img { width: 100%; border-radius: 14px; box-shadow: 0 20px 50px rgba(0,0,0,.15); }
+  .list { list-style: none; padding: 0; margin: 0; display: grid; gap: 22px; }
+  .list li strong { display: block; font-size: 18px; }
+  .list li span { color: var(--muted); font-size: 15px; }
+  @media (max-width: 800px) { .split { grid-template-columns: 1fr; gap: 28px; } .split img { display: none; } }
+
+  /* 統計 */
+  .stats { display: grid; gap: 24px; grid-template-columns: repeat(3, 1fr); margin-bottom: 44px; }
+  .stats b { display: block; font-size: clamp(44px, 9vw, 96px); line-height: 1; color: #fff; font-variant-numeric: tabular-nums; }
+  .stats span { color: rgba(255,255,255,.7); font-size: 15px; }
+  .dark .btn.line { margin-left: 0; }
+
+  /* FAQ */
+  details { border-bottom: 1px solid var(--line); padding: 16px 0; }
+  summary { cursor: pointer; font-weight: 600; font-size: 18px; list-style: none; display: flex; justify-content: space-between; gap: 16px; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--accent); font-size: 22px; line-height: 1; }
+  details[open] summary::after { content: "–"; }
+  details p { margin: 10px 0 0; color: var(--muted); }
+
+  /* 合作夥伴 + 頁尾 */
+  .partners { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 56px; }
+  .partners a {
+    border: 1px solid rgba(255,255,255,.25); border-radius: 999px; padding: 10px 22px; font-size: 15px;
+  }
+  .partners a:hover { border-color: var(--accent); color: var(--accent); }
+  .foot { font-size: 13px; color: rgba(255,255,255,.6); }
+  .foot .links { display: flex; flex-wrap: wrap; gap: 18px; margin-bottom: 14px; }
+  .foot .links a, .foot button.linkish { color: rgba(255,255,255,.85); background: none; border: 0; padding: 0; font: inherit; cursor: pointer; }
+  .foot .links a:hover, .foot button.linkish:hover { color: #fff; text-decoration: underline; }
+
+  /* 隱私權政策視窗 */
+  dialog { max-width: 560px; width: calc(100% - 40px); border: 0; border-radius: 14px; padding: 28px; color: var(--text); }
+  dialog::backdrop { background: rgba(0,0,0,.55); }
+  dialog h3 { margin: 0 0 12px; }
+  dialog p, dialog li { font-size: 14px; color: var(--muted); }
+  dialog button { margin-top: 12px; background: var(--navy); color: #fff; border: 0; padding: 8px 20px; border-radius: 999px; cursor: pointer; }
+
+  /* 進場動畫 */
+  .fade { opacity: 0; transform: translateY(24px); transition: opacity .7s ease, transform .7s ease; }
+  .slide.in .fade { opacity: 1; transform: none; }
+  .slide.in .fade:nth-child(2) { transition-delay: .1s; }
+  .slide.in .fade:nth-child(3) { transition-delay: .2s; }
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .fade { opacity: 1; transform: none; transition: none; }
+    .scroll-hint { animation: none; }
+  }
+  /* 手機或螢幕很矮時放寬，避免內容被卡住 */
+  @media (max-height: 620px), (max-width: 700px) {
+    html { scroll-snap-type: y proximity; }
+    .slide { padding-top: 80px; padding-bottom: 56px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="top">
+  <a class="brand" href="#s1">
+    <img src="assets/img/logo.png" alt="" onerror="this.style.display='none'">
+    <span>中華虛擬航空</span>
+  </a>
+  <div class="right">
+    <a href="index-en.html">English</a>
+    <a class="pill" href="https://vamsys.io/login/china_airlines_virtual">組員登入</a>
+  </div>
+</div>
+
+<nav class="dots" aria-label="頁面導覽">
+  <a href="#s1" title="首頁"></a>
+  <a href="#s2" title="關於我們"></a>
+  <a href="#s3" title="簽派系統"></a>
+  <a href="#s4" title="統計數據"></a>
+  <a href="#s5" title="加入我們"></a>
+  <a href="#s6" title="常見問題"></a>
+  <a href="#s7" title="合作夥伴"></a>
+</nav>
+
+<!-- 1 首頁 -->
+<section class="slide hero" id="s1">
+  <div class="video">
+    <iframe src="https://www.youtube.com/embed/mOUhXYManWc?autoplay=1&mute=1&loop=1&playlist=mOUhXYManWc&controls=0&showinfo=0&modestbranding=1&playsinline=1" title="背景影片" allow="autoplay; encrypted-media" referrerpolicy="strict-origin-when-cross-origin" tabindex="-1"></iframe>
+  </div>
+  <div class="inner">
+    <p class="tag fade">CHINA AIRLINES VIRTUAL</p>
+    <h1 class="fade">點亮台灣的天空</h1>
+    <p class="lead fade">飛行，不該有門檻。</p>
+    <div class="fade">
+      <a class="btn" href="https://discord.gg/USDFnDamPG">加入我們</a>
+    </div>
+  </div>
+  <div class="scroll-hint">SCROLL ↓</div>
+</section>
+
+<!-- 2 關於我們 -->
+<section class="slide" id="s2">
+  <div class="inner">
+    <p class="tag fade">ABOUT</p>
+    <h2 class="fade">歡迎回家，機長。</h2>
+    <p class="sub fade">中華虛擬航空是一個讓熱愛飛行的人聚在一起的地方。這裡沒有壓力，只有分享與成長。</p>
+    <div class="cols fade">
+      <div class="col"><h3>連飛活動</h3><p>與其他虛擬航空公司舉辦飛行活動。</p></div>
+      <div class="col"><h3>線上教學</h3><p>數十場線上課程，讓菜鳥成為能自在與航管溝通的機師。</p></div>
+      <div class="col"><h3>最活躍社群</h3><p>每天都有許多成員在 Discord 上交流。</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 簽派系統 -->
+<section class="slide soft" id="s3">
+  <div class="inner split">
+    <div>
+      <p class="tag fade">DISPATCH</p>
+      <h2 class="fade">簽派系統</h2>
+      <ul class="list fade">
+        <li><strong>真實的航線與飛機</strong><span>模擬真實航空公司的執飛體驗。</span></li>
+        <li><strong>追蹤每趟飛行</strong><span>記錄每班飛行與去過的機場。</span></li>
+        <li><strong>統計與競賽</strong><span>與朋友比比誰飛得又多又遠又省油。</span></li>
+        <li><strong>主題活動與任務</strong><span>不定期舉辦挑戰與限時活動。</span></li>
+      </ul>
+    </div>
+    <img class="fade" src="assets/img/dispatch-intro.jpg" alt="簽派系統畫面" onerror="this.style.display='none'">
+  </div>
+</section>
+
+<!-- 4 統計 -->
+<section class="slide dark" id="s4">
+  <div class="inner">
+    <p class="tag fade">STATISTICS</p>
+    <h2 class="fade">一起飛過的每一哩</h2>
+    <p class="sub fade">成員們累積的飛行成果。</p>
+    <div class="stats fade">
+      <div><b data-count="0" id="n-pilots">0</b><span>活躍機師</span></div>
+      <div><b data-count="0" id="n-flights">0</b><span>班次</span></div>
+      <div><b data-count="0" id="n-hours">0</b><span>飛行時數</span></div>
+    </div>
+    <div class="fade">
+      <a class="btn line" href="flight-history-20260912.html">查看聯飛紀錄</a>
+    </div>
+  </div>
+</section>
+
+<!-- 5 加入我們 -->
+<section class="slide" id="s5">
+  <div class="inner">
+    <p class="tag fade">JOIN US</p>
+    <h2 class="fade">人才招募</h2>
+    <p class="sub fade">無論是菜鳥、資深機師、專業航管，我們都歡迎您加入。</p>
+    <div class="cols fade">
+      <a class="col" href="https://discord.gg/USDFnDamPG"><h3>Discord →</h3><p>每天都有成員在線上飛行、學習、討論。</p></a>
+      <a class="col" href="https://www.facebook.com/groups/596448671760640"><h3>Facebook 社團 →</h3><p>數百位成員一起分享飛行的快樂。</p></a>
+      <a class="col" href="https://www.instagram.com/china.airlines_virtual"><h3>Instagram →</h3><p>不定時分享活動資訊及照片。</p></a>
+    </div>
+  </div>
+</section>
+
+<!-- 6 常見問題 -->
+<section class="slide soft" id="s6">
+  <div class="inner" style="max-width:760px">
+    <p class="tag fade">FAQ</p>
+    <h2 class="fade">常見問題</h2>
+    <div class="fade">
+      <details><summary>什麼是虛擬航空？</summary><p>模擬真實航空公司的團體，成員透過連飛平台在虛擬天空中飛行，並與其他飛行員和航管溝通。</p></details>
+      <details><summary>加入後要做什麼？</summary><p>在虛擬天空中翱翔，並遵守當地飛行規定。</p></details>
+      <details><summary>有薪水嗎？</summary><p>當然沒有 😂 但會不定時發送禮物，年末會舉辦抽獎活動慰勞大家。</p></details>
+      <details><summary>我飛不好會不會被罵？</summary><p>不會～我們是友善的社群，不論新手或老手都歡迎。</p></details>
+      <details><summary>會不會被開除？</summary><p>原則上不會，除非違反本虛擬航空規定。</p></details>
+    </div>
+  </div>
+</section>
+
+<!-- 7 合作夥伴 + 頁尾 -->
+<section class="slide dark" id="s7">
+  <div class="inner">
+    <p class="tag fade">PARTNERS</p>
+    <h2 class="fade">合作夥伴</h2>
+    <div class="partners fade">
+      <a href="https://vatsim.net/">VATSIM</a>
+      <a href="https://www.ivao.aero/">IVAO</a>
+      <a href="https://www.hangzhouva.com/">杭州航空</a>
+      <a href="https://jalvirtual.com/">日本航空</a>
+      <a href="https://www.simbrief.com/home/?page=vapartners">Simbrief</a>
+    </div>
+    <div class="foot fade">
+      <div class="links">
+        <a href="https://discord.gg/USDFnDamPG">Discord</a>
+        <a href="https://www.facebook.com/groups/596448671760640">Facebook</a>
+        <a href="https://www.instagram.com/china.airlines_virtual">Instagram</a>
+        <button class="linkish" type="button" id="open-privacy">隱私權政策</button>
+      </div>
+      <p>© 中華虛擬航空. All Rights Reserved.</p>
+      <p>※免責聲明※ 本網頁提供的所有資料、商標、標誌、圖像連結及其他資料等只供學術探討研究，並無任何營利商業用途，與真實航空公司無任何關係。</p>
+    </div>
+  </div>
+</section>
+
+<dialog id="privacy">
+  <h3>隱私權政策</h3>
+  <p>我們將基於虛擬航空公司對飛行員的角度蒐集以下資料：</p>
+  <ul>
+    <li>您的暱稱、英文名縮寫、IVAO VID、VATSIM CID</li>
+    <li>您飛行的相關紀錄，僅限於當時飛行的呼號及飛行數據</li>
+  </ul>
+  <p>我們將保留這些資料並顯示於網站上，並作為活動宣傳使用。若您對隱私權政策有任何疑問或要求刪除資料，請隨時透過信箱與我們聯繫。</p>
+  <p><img src="assets/img/email.png" alt="聯絡信箱" style="height:20px" onerror="this.style.display='none'"></p>
+  <button type="button" id="close-privacy">關閉</button>
+</dialog>
+
+<script>
+  var slides = document.querySelectorAll(".slide");
+  var dots = document.querySelectorAll(".dots a");
+
+  // 目前頁面：進場動畫 + 圓點高亮
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (e) {
+      if (e.isIntersecting) {
+        e.target.classList.add("in");
+        var i = Array.prototype.indexOf.call(slides, e.target);
+        dots.forEach(function (d, j) { d.classList.toggle("on", i === j); });
+      }
+    });
+  }, { threshold: 0.55 });
+  slides.forEach(function (s) { io.observe(s); });
+
+  // 隱私權政策視窗
+  var dlg = document.getElementById("privacy");
+  document.getElementById("open-privacy").onclick = function () { dlg.showModal(); };
+  document.getElementById("close-privacy").onclick = function () { dlg.close(); };
+  dlg.addEventListener("click", function (e) { if (e.target === dlg) dlg.close(); });
+</script>
+</body>
+</html>
